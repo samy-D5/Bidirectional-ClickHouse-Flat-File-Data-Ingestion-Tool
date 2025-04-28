@@ -64,6 +64,20 @@ java -jar target/demo-0.0.1-SNAPSHOT.jar
 
 The application will be available at http://localhost:8080
 
+## Images
+Added images below of the project
+
+![Screenshot (72)](https://github.com/user-attachments/assets/ed04662c-4cd9-47b5-ade4-94483aab7193)
+
+![Screenshot (73)](https://github.com/user-attachments/assets/dd87ca7f-6266-4afa-a31f-b7f0197cba63)
+
+
+![Screenshot (74)](https://github.com/user-attachments/assets/c841caa8-d2e0-417f-910f-a76427ac0284)
+
+![Screenshot (75)](https://github.com/user-attachments/assets/f8d5e527-a34e-4528-b8ee-2e839ffe0814)
+
+![Screenshot (76)](https://github.com/user-attachments/assets/836cde8c-258f-4b11-8e27-44cb537e7b61)
+
 ## Usage Guide
 
 ### 1. Source Selection
