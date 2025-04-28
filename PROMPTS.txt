@@ -1,0 +1,15 @@
+PublishCopyAI Assistance Prompts Used During Development
+Design Phase Prompts
+
+"Design a Spring Boot application architecture for bidirectional data transfer between ClickHouse and CSV files"
+"What are the best practices for handling JWT authentication with ClickHouse?"
+"Create a controller structure for a REST API that handles data ingestion operations"
+
+Backend Implementation Prompts
+
+"Write a Java service class to connect to ClickHouse using JDBC with JWT authentication"
+"How to export data from ClickHouse to CSV file using Java?"
+"Implement error handling for database operations in Spring Boot"
+"Write a function to parse CSV headers and map them to database columns"
+"Optimize batch inserts to ClickHouse from CSV files"
+"How to implement multi-table JOIN operations with ClickHouse JDBC?"
