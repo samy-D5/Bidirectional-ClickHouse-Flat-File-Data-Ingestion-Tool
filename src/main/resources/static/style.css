@@ -1,0 +1,56 @@
+body {
+    background-color: #f8f9fa;
+    padding-bottom: 40px;
+}
+
+.container {
+    max-width: 960px;
+}
+
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border-radius: 0.5rem;
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.column-container {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    padding: 10px;
+}
+
+.column-check {
+    margin-bottom: 8px;
+}
+
+.progress {
+    height: 25px;
+}
+
+.alert {
+    margin-bottom: 0;
+}
+
+.table-responsive {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* Join tables styling */
+.join-condition {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    background-color: #f8f9fa;
+}
+
+.table-select {
+    margin-bottom: 10px;
+}

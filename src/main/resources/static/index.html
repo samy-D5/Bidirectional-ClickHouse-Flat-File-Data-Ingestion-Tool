@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClickHouse & Flat File Data Ingestion Tool</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="mt-4 mb-4 text-center">Bidirectional Data Ingestion Tool</h1>
+
+        <!-- Source Selection -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>Source Selection</h4>
+            </div>
+            <div class="card-body">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="sourceType" id="clickhouseSource"
+                        value="clickhouse" checked>
+                    <label class="form-check-label" for="clickhouseSource">ClickHouse</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="sourceType" id="flatFileSource" value="flatFile">
+                    <label class="form-check-label" for="flatFileSource">Flat File</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Connection Settings -->
+        <div class="card mb-4" id="connectionCard">
+            <div class="card-header">
+                <h4>Connection Settings</h4>
+            </div>
+            <div class="card-body">
+                <!-- ClickHouse Settings -->
+                <div id="clickhouseSettings">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="clickhouseHost" class="form-label">Host</label>
+                            <input type="text" class="form-control" id="clickhouseHost" value="localhost">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="clickhousePort" class="form-label">Port</label>
+                            <input type="text" class="form-control" id="clickhousePort" value="8123">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="clickhouseDatabase" class="form-label">Database</label>
+                            <input type="text" class="form-control" id="clickhouseDatabase" value="default">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="clickhouseUser" class="form-label">User</label>
+                            <input type="text" class="form-control" id="clickhouseUser" value="default">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="clickhouseJWT" class="form-label">JWT Token</label>
+                        <input type="password" class="form-control" id="clickhouseJWT">
+                    </div>
+                </div>
+
+                <!-- Flat File Settings -->
+                <div id="flatFileSettings" style="display: none;">
+                    <div class="mb-3">
+                        <label for="csvFile" class="form-label">CSV File</label>
+                        <input class="form-control" type="file" id="csvFile" accept=".csv">
+                    </div>
+                    <div class="mb-3">
+                        <label for="csvDelimiter" class="form-label">Delimiter</label>
+                        <select class="form-select" id="csvDelimiter">
+                            <option value="," selected>Comma (,)</option>
+                            <option value=";">Semicolon (;)</option>
+                            <option value="\t">Tab (\t)</option>
+                            <option value="|">Pipe (|)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button id="connectBtn" class="btn btn-primary">Connect</button>
+            </div>
+        </div>
+
+        <!-- Table Selection (for ClickHouse) -->
+        <div class="card mb-4" id="tableSelectionCard" style="display: none;">
+            <div class="card-header">
+                <h4>Table Selection</h4>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label for="tableSelect" class="form-label">Select Table</label>
+                    <select class="form-select" id="tableSelect"></select>
+                </div>
+                <button id="loadColumnsBtn" class="btn btn-primary">Load Columns</button>
+            </div>
+        </div>
+
+        <!-- Multi-Table Join (Bonus) -->
+        <div class="card mb-4" id="joinTablesCard" style="display: none;">
+            <div class="card-header">
+                <h4>Multi-Table Join</h4>
+                <div class="form-check form-switch mt-2">
+                    <input class="form-check-input" type="checkbox" id="enableJoinSwitch">
+                    <label class="form-check-label" for="enableJoinSwitch">Enable Multi-Table Join</label>
+                </div>
+            </div>
+            <div class="card-body" id="joinTablesBody" style="display: none;">
+                <div id="tablesContainer">
+                    <div class="mb-3">
+                        <select class="form-select table-select" data-index="0"></select>
+                    </div>
+                </div>
+                <button id="addTableBtn" class="btn btn-outline-secondary mb-3">Add Another Table</button>
+
+                <div id="joinConditionsContainer"></div>
+                <button id="loadJoinColumnsBtn" class="btn btn-primary">Load Columns from Joined Tables</button>
+            </div>
+        </div>
+
+        <!-- Column Selection -->
+        <div class="card mb-4" id="columnSelectionCard" style="display: none;">
+            <div class="card-header">
+                <h4>Column Selection</h4>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-2">
+                        <button id="selectAllColumns" class="btn btn-outline-primary btn-sm">Select All</button>
+                        <button id="deselectAllColumns" class="btn btn-outline-secondary btn-sm">Deselect All</button>
+                    </div>
+                    <div id="columnsContainer" class="column-container">
+                        <!-- Columns will be dynamically added here -->
+                    </div>
+                </div>
+                <button id="previewDataBtn" class="btn btn-info">Preview Data</button>
+            </div>
+        </div>
+
+        <!-- Data Preview -->
+        <div class="card mb-4" id="dataPreviewCard" style="display: none;">
+            <div class="card-header">
+                <h4>Data Preview</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped" id="previewTable">
+                        <thead>
+                            <tr id="previewTableHeader"></tr>
+                        </thead>
+                        <tbody id="previewTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Target Selection -->
+        <div class="card mb-4" id="targetCard" style="display: none;">
+            <div class="card-header">
+                <h4>Target Selection</h4>
+            </div>
+            <div class="card-body">
+                <div id="clickhouseTargetSettings" style="display: none;">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="targetClickhouseHost" class="form-label">Host</label>
+                            <input type="text" class="form-control" id="targetClickhouseHost" value="localhost">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="targetClickhousePort" class="form-label">Port</label>
+                            <input type="text" class="form-control" id="targetClickhousePort" value="8123">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="targetClickhouseDatabase" class="form-label">Database</label>
+                            <input type="text" class="form-control" id="targetClickhouseDatabase" value="default">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="targetClickhouseTable" class="form-label">Table</label>
+                            <input type="text" class="form-control" id="targetClickhouseTable">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="targetClickhouseJWT" class="form-label">JWT Token</label>
+                        <input type="password" class="form-control" id="targetClickhouseJWT">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="card mb-4" id="actionsCard" style="display: none;">
+            <div class="card-header">
+                <h4>Data Ingestion</h4>
+            </div>
+            <div class="card-body">
+                <button id="startIngestionBtn" class="btn btn-success">Start Ingestion</button>
+                <div class="progress mt-3" style="display: none;" id="progressBarContainer">
+                    <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated"
+                        role="progressbar" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status and Results -->
+        <div class="card mb-4" id="statusCard" style="display: none;">
+            <div class="card-header">
+                <h4>Status & Results</h4>
+            </div>
+            <div class="card-body">
+                <div id="statusMessage" class="alert alert-info" role="alert">
+                    Ready
+                </div>
+                <div id="resultContainer" style="display: none;">
+                    <div class="alert alert-success" role="alert">
+                        <strong>Ingestion Complete!</strong>
+                        <span id="recordCount"></span> records processed.
+                    </div>
+                </div>
+                <div id="errorContainer" style="display: none;">
+                    <div class="alert alert-danger" role="alert">
+                        <strong>Error:</strong> <span id="errorMessage"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
